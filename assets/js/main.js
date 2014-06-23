@@ -66,12 +66,22 @@ function simulation( data ) {
   for(var i=0; i<un; i++) {
     ues[i] = {};
     ues[i].data = data.users[i];
-    ues[i].placemark = ge.createPlacemark('');
+
+    /*
+     * Create placemark, set the placemark ID. 
+     * ID is an string.
+     * The ID is important, it must correspond to the 
+     * user's ID.
+     */
+    ues[i].placemark = ge.createPlacemark(i.toString());
+
     var point = ge.createPoint('');
     point.setLatitude(parseFloat(ues[i].data.lat[0]));
     point.setLongitude(parseFloat(ues[i].data.long[0]));
     ues[i].placemark.setGeometry(point);
-    //google.earth.addEventListener(ues[i].placemark, 'click', doSomething);
+    
+    google.earth.addEventListener( ues[i].placemark, 'click', placemarkHandler );
+
     ge.getFeatures().appendChild(ues[i].placemark);
   }
 
@@ -91,8 +101,18 @@ function updatePos() {
     var point = ues[i].placemark.getGeometry();
     point.setLatitude(parseFloat(ues[i].data.lat[timecounter]));
     point.setLongitude(parseFloat(ues[i].data.long[timecounter]));
+    if( parseInt( $('#userid').html() ) == i ) {
+      $('#sinr').html(ues[i].data.sinr[timecounter]);
+      $('#throughput').html(ues[i].data.throughput[timecounter]);
+    }
   }
   timecounter++;
+}
+
+function placemarkHandler(event) {
+  var placemark = event.getTarget();
+  var id = parseInt( placemark.getId() );
+  $('#userid').html(id);
 }
 
 google.setOnLoadCallback(init);
