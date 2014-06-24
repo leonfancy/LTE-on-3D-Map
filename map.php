@@ -60,6 +60,7 @@
   <script type="text/javascript" src="https://www.google.com/jsapi"> </script>
   <script type="text/javascript" src="assets/js/jquery-1.11.1.min.js"> </script>
   <script type="text/javascript" src="assets/lib/bootstrap/js/bootstrap.min.js"> </script>
+  <script type="text/javascript" src="assets/lib/d3/d3.min.js"> </script>
   <script type="text/javascript" src="assets/js/main.js"> </script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 <?php
-ini_set('display_errors', true);
-error_reporting(E_ALL);
 $un = 2;
+
 $data = new stdClass;
-//$data->stations = [];
+
+// get the users' data
 for( $i=1; $i<=$un; $i++ ) {
   $filename = "data/user$i.txt";
   $fp = fopen($filename,"r");
@@ -16,7 +16,19 @@ for( $i=1; $i<=$un; $i++ ) {
     $ud->throughput[] = $arr[3];
   }
   $data->users[] = $ud;
+  fclose($fp);
 }
+
+// get the stations' data
+$fp = fopen('data/stations.txt',"r");
+$arr = fgetcsv($fp);
+while( $arr = fgetcsv($fp) ) {
+  $sd = new stdClass;
+  $sd->lat = $arr[0];
+  $sd->long = $arr[1];
+  $data->stations[] = $sd;
+}
+fclose($fp);
 
 header('Content-Type:application/json');
 echo json_encode($data);

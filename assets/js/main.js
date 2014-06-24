@@ -1,3 +1,4 @@
+var path_prefix = window.location.href.replace('map.php','');
 // the Google Earth handler
 var ge;
 
@@ -49,6 +50,30 @@ function failureCB(errorCode) {
 
 // simulate the users and base stations
 function simulation( data ) {
+  // the number of base stations
+  var bn = data.stations.length; 
+
+  for( var i=0; i<bn; i++) {
+    var placemark = ge.createPlacemark("station-" + i.toString());
+    placemark.setName("station " + i.toString());
+
+    // Add a custom icon
+    var icon = ge.createIcon('');
+    icon.setHref(path_prefix + 'assets/images/station.png');
+    console.log(path_prefix);
+    var style = ge.createStyle(''); 
+    style.getIconStyle().setIcon(icon); 
+    style.getIconStyle().setScale(2.0);
+    placemark.setStyleSelector(style); 
+    
+    var point = ge.createPoint('');
+    point.setLatitude(parseFloat(data.stations[i].lat));
+    point.setLongitude(parseFloat(data.stations[i].long));
+    placemark.setGeometry(point);
+
+    ge.getFeatures().appendChild(placemark);
+  }
+
   // the number of users 
   var un = data.users.length;
 
@@ -74,7 +99,16 @@ function simulation( data ) {
      * user's ID.
      */
     ues[i].placemark = ge.createPlacemark(i.toString());
+    ues[i].placemark.setName("user " + i.toString());
 
+    // Add a custom icon
+    var icon = ge.createIcon('');
+    icon.setHref(path_prefix + 'assets/images/phone.png');
+    console.log(path_prefix);
+    var style = ge.createStyle(''); 
+    style.getIconStyle().setIcon(icon); 
+    ues[i].placemark.setStyleSelector(style); 
+    
     var point = ge.createPoint('');
     point.setLatitude(parseFloat(ues[i].data.lat[0]));
     point.setLongitude(parseFloat(ues[i].data.long[0]));
