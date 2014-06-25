@@ -1,11 +1,11 @@
 <?php
-$un = 6;
+$un = 2;
 
 $data = new stdClass;
 
 // get the users' data
 for( $i=1; $i<=$un; $i++ ) {
-  $filename = "data/user$i.csv";
+  $filename = "data/user$i.txt";
   $fp = fopen($filename,"r");
   $ud = new stdClass;
   $arr = fgetcsv($fp);
@@ -20,7 +20,7 @@ for( $i=1; $i<=$un; $i++ ) {
 }
 
 // get the stations' data
-$fp = fopen('data/stations.csv',"r");
+$fp = fopen('data/stations.txt',"r");
 $arr = fgetcsv($fp);
 while( $arr = fgetcsv($fp) ) {
   $sd = new stdClass;
