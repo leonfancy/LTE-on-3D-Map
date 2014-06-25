@@ -59,7 +59,7 @@ function simulation( data ) {
 
     // Add a custom icon
     var icon = ge.createIcon('');
-    icon.setHref(path_prefix + 'assets/images/station.png');
+    icon.setHref(path_prefix + 'assets/images/station-yellow.png');
     console.log(path_prefix);
     var style = ge.createStyle(''); 
     style.getIconStyle().setIcon(icon); 
@@ -103,7 +103,7 @@ function simulation( data ) {
 
     // Add a custom icon
     var icon = ge.createIcon('');
-    icon.setHref(path_prefix + 'assets/images/phone.png');
+    icon.setHref(path_prefix + 'assets/images/phone-red.png');
     console.log(path_prefix);
     var style = ge.createStyle(''); 
     style.getIconStyle().setIcon(icon); 
