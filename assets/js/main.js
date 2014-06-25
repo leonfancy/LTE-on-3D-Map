@@ -16,6 +16,9 @@ var timecounter = 1;
 // Total similation time (seconds)
 var totalTime = 0;
 
+// current selected user ID
+var curUserID = 0;
+
 google.load("earth", "1", {"other_params":"sensor=false"});
 
 function init() {
@@ -60,7 +63,6 @@ function simulation( data ) {
     // Add a custom icon
     var icon = ge.createIcon('');
     icon.setHref(path_prefix + 'assets/images/station-yellow.png');
-    console.log(path_prefix);
     var style = ge.createStyle(''); 
     style.getIconStyle().setIcon(icon); 
     style.getIconStyle().setScale(2.0);
@@ -104,7 +106,6 @@ function simulation( data ) {
     // Add a custom icon
     var icon = ge.createIcon('');
     icon.setHref(path_prefix + 'assets/images/phone-red.png');
-    console.log(path_prefix);
     var style = ge.createStyle(''); 
     style.getIconStyle().setIcon(icon); 
     ues[i].placemark.setStyleSelector(style); 
@@ -114,7 +115,7 @@ function simulation( data ) {
     point.setLongitude(parseFloat(ues[i].data.long[0]));
     ues[i].placemark.setGeometry(point);
     
-    google.earth.addEventListener( ues[i].placemark, 'click', placemarkHandler );
+    google.earth.addEventListener( ues[i].placemark, 'click', userClickHandler );
 
     ge.getFeatures().appendChild(ues[i].placemark);
   }
@@ -135,7 +136,7 @@ function updatePos() {
     var point = ues[i].placemark.getGeometry();
     point.setLatitude(parseFloat(ues[i].data.lat[timecounter]));
     point.setLongitude(parseFloat(ues[i].data.long[timecounter]));
-    if( parseInt( $('#userid').html() ) == i ) {
+    if( curUserID == i ) {
       $('#sinr').html(ues[i].data.sinr[timecounter]);
       $('#throughput').html(ues[i].data.throughput[timecounter]);
     }
@@ -143,10 +144,25 @@ function updatePos() {
   timecounter++;
 }
 
-function placemarkHandler(event) {
+function userClickHandler(event) {
   var placemark = event.getTarget();
   var id = parseInt( placemark.getId() );
   $('#userid').html(id);
+
+  var icon = ge.createIcon('');
+  var style = ge.createStyle(''); 
+
+  // change the user's icon when click it
+  icon.setHref(path_prefix + 'assets/images/phone-green.png');
+  style.getIconStyle().setIcon(icon); 
+  ues[id].placemark.setStyleSelector(style); 
+
+  // change the previous selected user's icon to the default icon 
+  icon.setHref(path_prefix + 'assets/images/phone-red.png');
+  style.getIconStyle().setIcon(icon); 
+  ues[curUserID].placemark.setStyleSelector(style); 
+
+  curUserID = id;
 }
 
 google.setOnLoadCallback(init);
