@@ -42,9 +42,13 @@ function initCB(instance) {
   ge.getNavigationControl().setVisibility(ge.VISIBILITY_SHOW);
 
   // Move the camera.
-  var la = ge.createLookAt('');
-  la.set(50.0021 , 80.0012, 0, ge.ALTITUDE_RELATIVE_TO_GROUND, -8.541, 66.213, 20000);
-  ge.getView().setAbstractView(la);
+  var lookAt = ge.createLookAt('');
+  lookAt.setLatitude(37.80769684195154);
+  lookAt.setLongitude(-122.41233782046058);
+  lookAt.setRange(200.0); //default is 0.0
+  lookAt.setTilt(45.0);
+
+  ge.getView().setAbstractView(lookAt);
 
 }
 
@@ -110,10 +114,6 @@ function simulation( data ) {
     style.getIconStyle().setIcon(icon); 
     ues[i].placemark.setStyleSelector(style); 
 
-    icon.setHref(path_prefix + 'assets/images/phone-green.png');
-    style.getIconStyle().setIcon(icon); 
-    ues[i].placemark.setStyleSelector(style); 
-    
     var point = ge.createPoint('');
     point.setLatitude(parseFloat(ues[i].data.lat[0]));
     point.setLongitude(parseFloat(ues[i].data.long[0]));
@@ -150,25 +150,26 @@ function updatePos() {
 
 function userClickHandler(event) {
   var placemark = event.getTarget();
-  var id = parseInt( placemark.getId() );
-  $('#userid').html(id);
-
-  var icon = ge.createIcon('');
-  var style = ge.createStyle(''); 
+  var prevUserID = curUserID;
+  curUserID = parseInt( placemark.getId() );
+  $('#userid').html(curUserID);
 
   // change the user's icon when click it
+  var icon = ge.createIcon('');
+  var style = ge.createStyle(''); 
   icon.setHref(path_prefix + 'assets/images/phone-green.png');
   style.getIconStyle().setIcon(icon); 
-  ues[id].placemark.setStyleSelector(style); 
-  console.log('id = ' + id);
-  console.log('curUserID = ' + curUserID);
-
-  // change the previous selected user's icon to the default icon 
-  icon.setHref(path_prefix + 'assets/images/phone-red.png');
-  style.getIconStyle().setIcon(icon); 
+  style.getIconStyle().setScale(1.5);
   ues[curUserID].placemark.setStyleSelector(style); 
 
-  curUserID = id;
+  // change the previous selected user's icon to the default icon 
+  if( curUserID != prevUserID ) {
+    var icon = ge.createIcon('');
+    var style = ge.createStyle(''); 
+    icon.setHref(path_prefix + 'assets/images/phone-red.png');
+    style.getIconStyle().setIcon(icon); 
+    ues[prevUserID].placemark.setStyleSelector(style); 
+  }
 }
 
 google.setOnLoadCallback(init);
