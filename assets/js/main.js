@@ -93,6 +93,8 @@ function simulation( data ) {
    *          time interval.
    */
   totalTime = data.users[0].lat.length;
+  $('#totaltime').html(totalTime);
+
 
   for(var i=0; i<un; i++) {
     ues[i] = {};
@@ -124,8 +126,6 @@ function simulation( data ) {
     ge.getFeatures().appendChild(ues[i].placemark);
   }
 
-  // update the user's position every second
-  timer = setInterval(updatePos, 1000);
 }
 
 // update the position of every user per second
@@ -145,6 +145,7 @@ function updatePos() {
       $('#throughput').html(ues[i].data.throughput[timecounter]);
     }
   }
+  $('#curtime').html(timecounter);
   timecounter++;
 }
 
@@ -173,3 +174,28 @@ function userClickHandler(event) {
 }
 
 google.setOnLoadCallback(init);
+
+$('#switcher').click(function() {
+  var switcher = $('#switcher .glyphicon');
+  if( switcher.hasClass('glyphicon-play') ) {
+    // update the user's position every second
+    timer = setInterval(updatePos, 1000);
+    $('#switcher').html(
+      '<span class="glyphicon glyphicon-pause"></span> 暂停'
+      );
+  } else if ( switcher.hasClass('glyphicon-pause') ) {
+    clearInterval(timer);
+    $('#switcher').html(
+      '<span class="glyphicon glyphicon-play"></span> 开始'
+      );
+  }
+});
+
+$('#restart').click(function () {
+  clearInterval(timer);
+  timecounter = 1;
+  $('#switcher').html(
+    '<span class="glyphicon glyphicon-pause"></span> 暂停'
+    );
+  timer = setInterval(updatePos, 1000);
+});

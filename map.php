@@ -31,15 +31,33 @@
   </div>
 
   <div class="col-md-4">
+    <div id="controls" class="btn-group btn-group-justified">
+      <a id="switcher" type="button" class="btn btn-success"><span class="glyphicon glyphicon-play"></span> 开始</a>
+      <a id="restart" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-repeat"></span> 重新开始</a>
+    </div>
+    <div class="panel panel-info">
+      <table class="table table-striped">
+        <tbody>
+          <tr>
+            <td>仿真总时间(s)</td>
+            <td id="totaltime"></td>
+          </tr>
+          <tr>
+            <td>现在时刻(s)</td>
+            <td id="curtime"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <div class="panel panel-info">
       <div class="panel-heading">
-        <h3 class="panel-title">User Information</h3>
+        <h3 class="panel-title">用户信息</h3>
       </div>
       <table class="table table-striped">
         <tbody>
           <tr>
             <td>User ID</td>
-            <td id="userid"></td>
+            <td id="userid">0</td>
           </tr>
           <tr>
             <td>SINR</td>
