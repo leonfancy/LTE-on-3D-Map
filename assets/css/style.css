@@ -1,5 +1,4 @@
 body {
-  padding-top: 10px;
 }
 
 h1 {
@@ -8,4 +7,26 @@ h1 {
 
 #controls {
   margin-bottom: 10px;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2.5px;
+}
+
+.dot {
+  fill: white;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+#sinr-chart, #thrput-chart {
+  text-align: center;
 }

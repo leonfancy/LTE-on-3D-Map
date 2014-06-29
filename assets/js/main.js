@@ -19,6 +19,9 @@ var totalTime = 0;
 // current selected user ID
 var curUserID = 0;
 
+var sinrChartUpdater;
+var thrputChartUpdater;
+
 google.load("earth", "1", {"other_params":"sensor=false"});
 
 function init() {
@@ -29,12 +32,6 @@ function initCB(instance) {
   ge = instance;
   ge.getWindow().setVisibility(true);
   ge.getNavigationControl().setVisibility(ge.VISIBILITY_HIDE);
-
-  // get data of users and base stations 
-  $.getJSON("_getdata.ajax.php",function (data) {
-    // start simulation 
-    simulation(data);
-  });
 
   ge.getLayerRoot().enableLayerById(ge.LAYER_BUILDINGS_LOW_RESOLUTION, true);
   ge.getLayerRoot().enableLayerById(ge.LAYER_TERRAIN, true);
@@ -50,9 +47,15 @@ function initCB(instance) {
 
   ge.getView().setAbstractView(lookAt);
 
+  // get data of users and base stations 
+  $.getJSON("_getdata.ajax.php",function (data) {
+    // start simulation 
+    simulation(data);
+  });
 }
 
 function failureCB(errorCode) {
+  alert('请保证能够正常连接Google地图');
 }
 
 // simulate the users and base stations
@@ -126,6 +129,9 @@ function simulation( data ) {
     ge.getFeatures().appendChild(ues[i].placemark);
   }
 
+  sinrChartUpdater = drawChart( ues[curUserID].data.sinr, d3.select('#sinr-chart'), 'SINR' );
+  thrputChartUpdater = drawChart( ues[curUserID].data.throughput, d3.select('#thrput-chart'), 'Throughput' );
+
 }
 
 // update the position of every user per second
@@ -136,16 +142,20 @@ function updatePos() {
     clearInterval(timer);
   }
 
+  $('#curtime').html(timecounter);
+
   for(var i=0; i<un; i++) {
     var point = ues[i].placemark.getGeometry();
     point.setLatitude(parseFloat(ues[i].data.lat[timecounter]));
     point.setLongitude(parseFloat(ues[i].data.long[timecounter]));
-    if( curUserID == i ) {
-      $('#sinr').html(ues[i].data.sinr[timecounter]);
-      $('#throughput').html(ues[i].data.throughput[timecounter]);
-    }
   }
-  $('#curtime').html(timecounter);
+
+  $('#sinr').html(ues[curUserID].data.sinr[timecounter]);
+  $('#throughput').html(ues[curUserID].data.throughput[timecounter]);
+
+  sinrChartUpdater();
+  thrputChartUpdater();
+
   timecounter++;
 }
 
@@ -171,6 +181,9 @@ function userClickHandler(event) {
     style.getIconStyle().setIcon(icon); 
     ues[prevUserID].placemark.setStyleSelector(style); 
   }
+
+  sinrChartUpdater = drawChart( ues[curUserID].data.sinr, d3.select('#sinr-chart'), 'SINR' );
+  thrputChartUpdater = drawChart( ues[curUserID].data.throughput, d3.select('#thrput-chart'), 'Throughput' );
 }
 
 google.setOnLoadCallback(init);
@@ -197,5 +210,79 @@ $('#restart').click(function () {
   $('#switcher').html(
     '<span class="glyphicon glyphicon-pause"></span> 暂停'
     );
+  sinrChartUpdater = drawChart( ues[curUserID].data.sinr, d3.select('#sinr-chart'), 'SINR' );
+  thrputChartUpdater = drawChart( ues[curUserID].data.throughput, d3.select('#thrput-chart'), 'Throughput' );
   timer = setInterval(updatePos, 1000);
 });
+
+function drawChart(data, chartDiv, chartType) {
+  // delete the old chart for rendering the new one
+  chartDiv.select("svg").remove();
+
+  var margin = {top: 20, right: 30, bottom: 30, left: 50},
+      width = 500 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+  
+  var x = d3.scale.linear()
+      .domain([1, totalTime])
+      .range([0, width]);
+  
+  var y = d3.scale.linear()
+      .domain( d3.extent(data) )
+      .range([height, 0]);
+  
+  var line = d3.svg.line()
+      .interpolate("monotone")
+      .x(function(d,i) { return x(i); })
+      .y(function(d) { return y(d); });
+  
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
+  
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+  
+  var svg = chartDiv.append("svg").attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+  	.append("text")
+        .attr("transform", "rotate(0)")
+        .attr("x", width - margin.right)
+        .attr("y", -6)
+        .style("text-anchor", "right")
+        .text("Time");
+  	
+  var ysvg = svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+  	.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 12)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end");
+  if ( chartType == 'SINR' ) {
+    ysvg.text("SINR (dB)"); 
+  } else if ( chartType == "Throughput" ) {
+    ysvg.text("Throughput (kbps)");
+  }
+  	
+  svg.append("path")
+      .data([data.slice(0,timecounter)])
+      .attr("class", "line")
+      .attr("d", line);
+
+  function refreshChart() {
+    svg.selectAll(".line")
+      .data([data.slice(0,timecounter)])
+      .attr("d", line);
+  }
+  return refreshChart;
+}
