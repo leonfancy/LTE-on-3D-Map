@@ -228,7 +228,7 @@ function drawChart(data, chartDiv, chartType) {
       .range([0, width]);
   
   var y = d3.scale.linear()
-      .domain( d3.extent(data) )
+      .domain([d3.min(data)*0.9, d3.max(data)*1.1] )
       .range([height, 0]);
   
   var line = d3.svg.line()
