@@ -103,8 +103,8 @@ for( $i=1; $i<=$un; $i++ ) {
 经过上面一个步骤，所有演示需要的数据就准备就绪了，接下来就可以运行仿真平台了。
 在Chrome或者IE浏览器中键入地址`http://localhost/googlemap/map.php`(地址中的googlemap，表示平台代码放在了googlemap文件夹下面)，回车运行得到客户端显示界面，如下图所示：
 
-![LTE 3D](https://flic.kr/p/oBjYzE)
-![LTE 3D](https://flic.kr/p/oTMxU1)
+![LTE 3D](https://farm4.staticflickr.com/3863/14839628608_ecc33598c4_o.png)
+![LTE 3D](https://farm6.staticflickr.com/5576/15025877532_9a000dcf23_o.png)
 
 界面的左侧是3D地图区域，右侧是控制按钮、时间信息以及用户信息。下方是SINR与Throughput的曲线图。
 
